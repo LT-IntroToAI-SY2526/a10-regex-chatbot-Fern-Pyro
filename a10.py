@@ -152,6 +152,25 @@ def get_publish_year(name: str) -> str:
 
     return match.group("publish")
 
+def get_creation_year(name: str) -> str:
+    """Gets birth date of the given person
+
+    Args:
+        name - name of thing
+
+    Returns:
+        creation date for the given thing
+    """
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
+    print(f"{infobox_text}")
+    pattern = r"(?:Published|Publication date)(?P<create>\d+ \w+ \d{4}|\d+)"
+    error_text = (
+        "Page infobox has no birth information (at least none in xxxx-xx-xx format)"
+    )
+    match = get_match(infobox_text, pattern, error_text)
+
+    return match.group("create")
+
 # below are a set of actions. Each takes a list argument and returns a list of answers
 # according to the action and the argument. It is important that each function returns a
 # list of the answer(s) and not just the answer itself.
@@ -179,6 +198,16 @@ def publish_year(matches: List[str]) -> List[str]:
     """
     return [get_publish_year(matches[0])]
 
+def creation_year(matches: List[str]) -> List[str]:
+    """Returns birth date of named person in matches
+
+    Args:
+        matches - match from pattern of person's name to find birth date of
+
+    Returns:
+        birth date of named person
+    """
+    return [get_creation_year(matches[0])]
 
 def polar_radius(matches: List[str]) -> List[str]:
     """Returns polar radius of planet in matches
@@ -208,6 +237,7 @@ pa_list: List[Tuple[Pattern, Action]] = [
     ("when was % born".split(), birth_date),
     ("what is the polar radius of %".split(), polar_radius),
     ("when was % published".split(), publish_year),
+    ("when was % created".split(), creation_year),
     (["bye"], bye_action),
 ]
 
