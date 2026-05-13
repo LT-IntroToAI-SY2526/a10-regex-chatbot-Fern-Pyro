@@ -163,13 +163,70 @@ def get_creation_year(name: str) -> str:
     """
     infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
     print(f"{infobox_text}")
-    pattern = r"(?:Published|Publication date)(?P<create>\d+ \w+ \d{4}|\d+)"
+    pattern = r"(?:Founded|Launch date|release)(?P<create>\w+ \d+, \d{4}|\d+)"
     error_text = (
-        "Page infobox has no birth information (at least none in xxxx-xx-xx format)"
+        "Page infobox has no founding information"
     )
     match = get_match(infobox_text, pattern, error_text)
 
     return match.group("create")
+
+def get_pop_dens(name: str) -> str:
+    """Gets birth date of the given person
+
+    Args:
+        name - name of country
+
+    Returns:
+        population density for given country
+    """
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
+    print(f"{infobox_text}")
+    pattern = r"(?:Density)(?P<pop_dens>.+/km2)"
+    error_text = (
+        "Page infobox has no population density information"
+    )
+    match = get_match(infobox_text, pattern, error_text)
+
+    return match.group("create")
+
+def get_pop_dens(name: str) -> str:
+    """Gets birth date of the given person
+
+    Args:
+        name - name of country
+
+    Returns:
+        population density for given country
+    """
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
+    print(f"{infobox_text}")
+    pattern = r"(?:Density)(?P<pop_dens>.+/km2)"
+    error_text = (
+        "Page infobox has no population density information"
+    )
+    match = get_match(infobox_text, pattern, error_text)
+
+    return match.group("pop_dens")
+
+def get_gdp_per_capita(name: str) -> str:
+    """Gets birth date of the given person
+
+    Args:
+        name - name of country
+
+    Returns:
+        real gdp per capita for given country
+    """
+    infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
+    print(f"{infobox_text}")
+    pattern = r"(?:Per capita)(?P<gdp> .\d+,\d+|.\d+)"
+    error_text = (
+        "Page infobox has no gdp per capita information"
+    )
+    match = get_match(infobox_text, pattern, error_text)
+
+    return match.group("gdp")
 
 # below are a set of actions. Each takes a list argument and returns a list of answers
 # according to the action and the argument. It is important that each function returns a
@@ -191,10 +248,10 @@ def publish_year(matches: List[str]) -> List[str]:
     """Returns birth date of named person in matches
 
     Args:
-        matches - match from pattern of person's name to find birth date of
+        matches - match from pattern of book's name to find publishing date of
 
     Returns:
-        birth date of named person
+        publishing date of named book
     """
     return [get_publish_year(matches[0])]
 
@@ -208,6 +265,28 @@ def creation_year(matches: List[str]) -> List[str]:
         birth date of named person
     """
     return [get_creation_year(matches[0])]
+
+def pop_density(matches: List[str]) -> List[str]:
+    """Returns birth date of named person in matches
+
+    Args:
+        matches - match from pattern of person's name to find birth date of
+
+    Returns:
+        birth date of named person
+    """
+    return [get_pop_dens(matches[0])]
+
+def gdp_per_capita(matches: List[str]) -> List[str]:
+    """Returns birth date of named person in matches
+
+    Args:
+        matches - match from pattern of person's name to find birth date of
+
+    Returns:
+        birth date of named person
+    """
+    return [get_gdp_per_capita(matches[0])]
 
 def polar_radius(matches: List[str]) -> List[str]:
     """Returns polar radius of planet in matches
@@ -237,7 +316,9 @@ pa_list: List[Tuple[Pattern, Action]] = [
     ("when was % born".split(), birth_date),
     ("what is the polar radius of %".split(), polar_radius),
     ("when was % published".split(), publish_year),
-    ("when was % created".split(), creation_year),
+    ("when was % founded".split(), creation_year),
+    ("what is the population density of %".split(), pop_density),
+    ("what is % gdp per capita".split(), gdp_per_capita),
     (["bye"], bye_action),
 ]
 
