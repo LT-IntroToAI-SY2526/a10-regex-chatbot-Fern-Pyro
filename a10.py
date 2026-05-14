@@ -134,17 +134,17 @@ def get_birth_date(name: str) -> str:
     return match.group("birth")
 
 def get_publish_year(name: str) -> str:
-    """Gets birth date of the given person
+    """Gets publish year of the given book
 
     Args:
-        name - name of the person
+        name - name of the book
 
     Returns:
-        birth date of the given person
+        publishing year of the given book
     """
     infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
     print(f"{infobox_text}")
-    pattern = r"(?:Published|Publication date)(?P<publish>\d+ \w+ \d{4}|\d+)"
+    pattern = r"(?:Published|Publication date)(?:\r?\s)?(?P<publish>\d+ \w+ \d{4}|\d+)"
     error_text = (
         "Page infobox has no birth information (at least none in xxxx-xx-xx format)"
     )
@@ -163,7 +163,7 @@ def get_creation_year(name: str) -> str:
     """
     infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
     print(f"{infobox_text}")
-    pattern = r"(?:Founded|Launch date|release)(?P<create>\w+ \d+, \d{4}|\d+)"
+    pattern = r"(?:Founded|Launch date|release)(?P<create>\w+ \d+, \d{4}|\d+|\w+ \d+)"
     error_text = (
         "Page infobox has no founding information"
     )
@@ -171,24 +171,6 @@ def get_creation_year(name: str) -> str:
 
     return match.group("create")
 
-def get_pop_dens(name: str) -> str:
-    """Gets birth date of the given person
-
-    Args:
-        name - name of country
-
-    Returns:
-        population density for given country
-    """
-    infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
-    print(f"{infobox_text}")
-    pattern = r"(?:Density)(?P<pop_dens>.+/km2)"
-    error_text = (
-        "Page infobox has no population density information"
-    )
-    match = get_match(infobox_text, pattern, error_text)
-
-    return match.group("create")
 
 def get_pop_dens(name: str) -> str:
     """Gets birth date of the given person
@@ -259,10 +241,10 @@ def creation_year(matches: List[str]) -> List[str]:
     """Returns birth date of named person in matches
 
     Args:
-        matches - match from pattern of person's name to find birth date of
+        matches - match from pattern of thing's name to find creation date of
 
     Returns:
-        birth date of named person
+        creation date of given thing
     """
     return [get_creation_year(matches[0])]
 
@@ -270,10 +252,10 @@ def pop_density(matches: List[str]) -> List[str]:
     """Returns birth date of named person in matches
 
     Args:
-        matches - match from pattern of person's name to find birth date of
+        matches - match from pattern of country's name to find population density of
 
     Returns:
-        birth date of named person
+        population density of given country
     """
     return [get_pop_dens(matches[0])]
 
@@ -281,10 +263,10 @@ def gdp_per_capita(matches: List[str]) -> List[str]:
     """Returns birth date of named person in matches
 
     Args:
-        matches - match from pattern of person's name to find birth date of
+        matches - match from pattern of country's name to find gdp per capita of
 
     Returns:
-        birth date of named person
+        gdp per capita of given country
     """
     return [get_gdp_per_capita(matches[0])]
 
@@ -332,7 +314,7 @@ def search_pa_list(src: List[str]) -> List[str]:
         source - a phrase represented as a list of words (strings)
 
     Returns:
-        a list of answers. Will be ["I don't understand"] if it finds no matches and
+        a list of answers Will be ["I don't understand"] if it finds no matches and
         ["No answers"] if it finds a match but no answers
     """
     for pat, act in pa_list:
